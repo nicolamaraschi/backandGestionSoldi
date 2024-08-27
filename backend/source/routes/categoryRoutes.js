@@ -12,4 +12,7 @@ router.post('/', authMiddleware, categoryController.addCategory);
 // Elimina una categoria (richiede autenticazione)
 router.delete('/:id', authMiddleware, categoryController.deleteCategory);
 
+// Aggiorna una categoria
+router.put('/:id', auth, updateCategory);
+
 module.exports = router;

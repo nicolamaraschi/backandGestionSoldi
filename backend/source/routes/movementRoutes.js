@@ -12,4 +12,7 @@ router.post('/', addMovement);
 // Route per eliminare un movimento
 router.delete('/:id', deleteMovement);
 
+// Aggiorna un movimento
+router.put('/:id', auth, updateMovement);
+
 module.exports = router;

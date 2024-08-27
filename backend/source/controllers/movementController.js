@@ -48,3 +48,32 @@ exports.deleteMovement = async (req, res) => {
     }
   };
   
+  // Aggiorna un movimento
+exports.updateMovement = async (req, res) => {
+  const { description, amount, date, category, type } = req.body;
+
+  try {
+    // Trova e aggiorna il movimento
+    const updatedMovement = await Movement.findByIdAndUpdate(
+      req.params.id,
+      {
+        description,
+        amount,
+        date,
+        category,
+        type
+      },
+      { new: true } // Restituisce il documento aggiornato
+    );
+
+    // Verifica se il movimento esiste
+    if (!updatedMovement) {
+      return res.status(404).json({ message: 'Movement not found' });
+    }
+
+    res.json(updatedMovement);
+  } catch (err) {
+    console.error('Error updating movement:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
