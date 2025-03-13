@@ -12,15 +12,16 @@ exports.getMovements = async (req, res) => {
   };
   
   exports.addMovement = async (req, res) => {
-    const { description, amount, date, category, type, userId } = req.body;
+    const { description, amount, date, category, type } = req.body;
+    const userId = req.user.userId; // Ottenere userId dal token invece di req.body
   
     const movement = new Movement({
       description,
       amount,
       date,
-      category,  // Assicurati di includere la categoria
-      type,      // Assicurati di includere il tipo
-      userId     // Assicurati di includere l'ID dell'utente
+      category,
+      type,
+      userId
     });
   
     try {

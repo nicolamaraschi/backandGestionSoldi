@@ -7,12 +7,7 @@ const cors = require('cors'); // Aggiungi questa riga per importare cors
 const app = express();
 
 
-// Abilita CORS con origini multiple
-app.use(cors({
-  origin: ['http://localhost:3001', 'http://192.168.1.69:3001'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'x-auth-token']
-}));
+app.use(cors()); // Abilita CORS per tutte le origini
 
 app.use(express.json());
 
