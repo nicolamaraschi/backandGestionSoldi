@@ -1,9 +1,19 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors'); // Aggiungi questa riga per importare cors
 
 // Inizializza Express
 const app = express();
+
+
+// Abilita CORS con origini multiple
+app.use(cors({
+  origin: ['http://localhost:3001', 'http://192.168.1.69:3001'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'x-auth-token']
+}));
+
 app.use(express.json());
 
 // Connessione a MongoDB
