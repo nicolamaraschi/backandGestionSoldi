@@ -1,0 +1,162 @@
+# API Testing Documentation
+
+## Authentication
+```bash
+# Register a new user
+curl -X POST -H "Content-Type: application/json" -d '{"email":"test@example.com","password":"password123","name":"Test User"}' http://localhost:3000/api/auth/register
+
+# Login
+curl -X POST -H "Content-Type: application/json" -d '{"email":"test@example.com","password":"password123"}' http://localhost:3000/api/auth/login
+
+# Logout
+curl -X POST -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/auth/logout
+```
+
+## Categories
+```bash
+# Create a new category
+curl -X POST -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"name":"Stipendio","type":"income"}' http://localhost:3000/api/categories
+
+# Get all categories
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/categories
+
+# Update a category
+curl -X PUT -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"name":"Salario","type":"income"}' http://localhost:3000/api/categories/CATEGORY_ID
+
+# Delete a category
+curl -X DELETE -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/categories/CATEGORY_ID
+```
+
+## Movements
+```bash
+# Add a new movement
+curl -X POST -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"description":"Stipendio marzo","amount":1500,"date":"2025-03-13","category":"Stipendio","type":"income"}' http://localhost:3000/api/movements
+
+# Get all movements
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/movements
+
+# Update a movement
+curl -X PUT -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"description":"Stipendio marzo aggiornato","amount":1600,"date":"2025-03-13","category":"Stipendio","type":"income"}' http://localhost:3000/api/movements/MOVEMENT_ID
+
+# Delete a movement
+curl -X DELETE -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/movements/MOVEMENT_ID
+```
+
+## Goals
+```bash
+# Create a new goal
+curl -X POST -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"title":"Vacanza estate","targetAmount":2000,"dueDate":"2025-08-01"}' http://localhost:3000/api/goals
+
+# Get all goals
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/goals
+
+# Get a specific goal
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/goals/GOAL_ID
+
+# Update a goal
+curl -X PUT -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"currentAmount":500,"targetAmount":2500}' http://localhost:3000/api/goals/GOAL_ID
+
+# Delete a goal
+curl -X DELETE -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/goals/GOAL_ID
+```
+
+## Budgets
+```bash
+# Create a new budget
+curl -X POST -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"category":"CATEGORY_ID","amount":500,"startDate":"2025-03-01","endDate":"2025-03-31"}' http://localhost:3000/api/budgets
+
+# Get all budgets
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/budgets
+
+# Get a specific budget
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/budgets/BUDGET_ID
+
+# Update a budget
+curl -X PUT -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"amount":600}' http://localhost:3000/api/budgets/BUDGET_ID
+
+# Delete a budget
+curl -X DELETE -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/budgets/BUDGET_ID
+```
+
+## Notifications
+```bash
+# Create a new notification
+curl -X POST -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"message":"Hai superato il budget alimentare"}' http://localhost:3000/api/notifications
+
+# Get all notifications
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/notifications
+
+# Get a specific notification
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/notifications/NOTIFICATION_ID
+
+# Mark a notification as read
+curl -X PUT -H "Content-Type: application/json" -H "x-auth-token: YOUR_TOKEN_HERE" -d '{"isRead":true}' http://localhost:3000/api/notifications/NOTIFICATION_ID
+
+# Delete a notification
+curl -X DELETE -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/notifications/NOTIFICATION_ID
+```
+
+## Dashboard
+```bash
+# Get all movements
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/movements
+
+# Get movement statistics
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/stats
+
+# Get statistics by category
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/category-stats
+
+# Get wallet balance
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/balance
+
+# Get financial forecast
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/forecast
+
+# Get reports
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/reports
+
+# Export data
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/export
+
+# Get financial overview
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/overview
+
+# Get financial trends
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/trends
+
+# Get financial comparison
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/comparison?startDate=2025-01-01&endDate=2025-03-31
+
+# Get notifications
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/notifications
+
+# Get goals
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/goals
+
+# Get budgets
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/dashboard/budgets
+```
+
+## Analytics
+```bash
+# Get financial overview
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/analytics/overview
+
+# Get financial trends
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/analytics/trends
+
+# Get financial comparison
+curl -H "x-auth-token: YOUR_TOKEN_HERE" http://localhost:3000/api/analytics/comparison?startDate=2025-01-01&endDate=2025-03-31
+```
+
+## Test
+```bash
+# Test API endpoint
+curl http://localhost:3000/api/test
+```
+
+## Notes
+1. Replace `YOUR_TOKEN_HERE` with the JWT token received from the login or register API
+2. Replace `CATEGORY_ID`, `MOVEMENT_ID`, `GOAL_ID`, `BUDGET_ID`, and `NOTIFICATION_ID` with the respective IDs received when creating these resources
+3. The token expires after 1 hour, after which you'll need to login again to get a new token

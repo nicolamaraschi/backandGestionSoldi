@@ -1,5 +1,8 @@
 const Movement = require('../models/Movement');
 const Category = require('../models/Category');
+const Notification = require('../models/Notification');
+const Goal = require('../models/Goal');
+const Budget = require('../models/Budget');
 
 // Ottieni tutti i movimenti
 exports.getMovements = async (req, res) => {

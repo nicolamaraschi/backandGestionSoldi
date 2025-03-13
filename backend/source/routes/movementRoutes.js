@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { getMovements, addMovement, deleteMovement } = require('../controllers/movementController');
-
+const { getMovements, addMovement, deleteMovement, updateMovement } = require('../controllers/movementController');
+const authMiddleware = require('../middleware/auth');
 
 // Route per ottenere movimenti
-router.get('/', getMovements);
+router.get('/', authMiddleware, getMovements);
 
 // Route per aggiungere un movimento
-router.post('/', addMovement);
+router.post('/', authMiddleware, addMovement);
 
 // Route per eliminare un movimento
-router.delete('/:id', deleteMovement);
+router.delete('/:id', authMiddleware, deleteMovement);
 
 // Aggiorna un movimento
-router.put('/:id', auth, updateMovement);
+router.put('/:id', authMiddleware, updateMovement);
 
 module.exports = router;
