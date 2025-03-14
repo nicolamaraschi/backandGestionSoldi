@@ -1,3 +1,6 @@
+Ecco un aggiornamento del README con le ultime modifiche apportate al progetto:
+
+```markdown
 # Money Manager Application
 
 Un'applicazione web completa per la gestione delle finanze personali, con backend RESTful API in Node.js/Express e frontend in React.
@@ -5,6 +8,16 @@ Un'applicazione web completa per la gestione delle finanze personali, con backen
 ## Panoramica
 
 Money Manager è un'applicazione che consente agli utenti di monitorare e gestire le proprie finanze personali, tenendo traccia di entrate e uscite, impostando budget, creando obiettivi di risparmio e visualizzando analisi dettagliate delle proprie abitudini finanziarie.
+
+## Ultimi Aggiornamenti
+
+### 2025-03-14
+
+- **Migliorata gestione degli errori**: Implementata una robusta gestione degli errori per autenticazione e registrazione utenti
+- **Ottimizzazione Dashboard**: La dashboard ora calcola statistiche direttamente dalle transazioni dell'utente
+- **Modello Movement perfezionato**: Aggiunta validazione e gestione automatica di ObjectId per userId
+- **Fix problemi di autenticazione**: Migliorati i messaggi di errore e la validazione dei campi di login e registrazione
+- **Sicurezza migliorata**: Implementate risposte più dettagliate dal server per una migliore esperienza utente
 
 ## Struttura del Progetto
 
@@ -103,6 +116,12 @@ Una volta avviati sia il backend che il frontend:
 1. Backend API: http://localhost:3000
 2. Frontend App: http://localhost:3001
 
+Per avviare entrambi con un singolo comando dalla directory principale:
+
+```bash
+npm run dev
+```
+
 ## API Endpoints
 
 ### Autenticazione
@@ -162,7 +181,16 @@ Una volta avviati sia il backend che il frontend:
 - `GET /api/analytics/trends` - Tendenze storiche
 - `GET /api/analytics/comparison` - Confronto periodi
 
-## Autenticazione e sicurezza
+## Gestione Errori
+
+L'applicazione implementa una gestione completa degli errori, sia lato client che server:
+
+- **Validazione Form**: Controlli dettagliati sui campi di input con feedback immediato
+- **Errori API**: Risposte strutturate con informazioni specifiche sul problema
+- **Feedback Utente**: Notifiche visuali per comunicare successi ed errori
+- **Error Boundary**: Protezione contro crash React con visualizzazione di fallback
+
+## Sicurezza
 
 L'applicazione utilizza JSON Web Tokens (JWT) per gestire l'autenticazione degli utenti. Ogni richiesta API (eccetto login e registrazione) richiede un token valido nel header HTTP:
 
@@ -170,106 +198,7 @@ L'applicazione utilizza JSON Web Tokens (JWT) per gestire l'autenticazione degli
 x-auth-token: YOUR_TOKEN_HERE
 ```
 
-I token hanno una durata di validità di 1 ora, dopo la quale è necessario effettuare un nuovo login.
-
-## Modelli di dati
-
-### Utente
-```
-{
-  _id: ObjectId,
-  email: String,
-  password: String (hashed),
-  name: String,
-  createdAt: Date
-}
-```
-
-### Movimento
-```
-{
-  _id: ObjectId,
-  userId: ObjectId,
-  type: "income" | "expense",
-  amount: Number,
-  category: String,
-  description: String,
-  date: Date,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
-
-### Categoria
-```
-{
-  _id: ObjectId,
-  userId: ObjectId,
-  name: String,
-  type: "income" | "expense",
-  createdAt: Date
-}
-```
-
-### Budget
-```
-{
-  _id: ObjectId,
-  userId: ObjectId,
-  category: ObjectId,
-  amount: Number,
-  startDate: Date,
-  endDate: Date,
-  createdAt: Date
-}
-```
-
-### Obiettivo
-```
-{
-  _id: ObjectId,
-  userId: ObjectId,
-  title: String,
-  targetAmount: Number,
-  currentAmount: Number,
-  dueDate: Date,
-  createdAt: Date
-}
-```
-
-### Notifica
-```
-{
-  _id: ObjectId,
-  userId: ObjectId,
-  message: String,
-  isRead: Boolean,
-  createdAt: Date
-}
-```
-
-## Avvio dell'applicazione
-
-Per avviare l'intera applicazione (backend e frontend contemporaneamente):
-
-1. Installa `concurrently` come dipendenza di sviluppo nella root del progetto:
-```bash
-npm install --save-dev concurrently
-```
-
-2. Aggiungi questo script al package.json nella root:
-```json
-"scripts": {
-  "backend": "cd backend && npm start",
-  "frontend": "cd frontend && npm start",
-  "dev": "concurrently \"npm run backend\" \"npm run frontend\""
-}
-```
-
-3. Avvia l'intero stack con un solo comando:
-```bash
-npm run dev
-```
+Le password vengono crittografate con bcrypt prima di essere salvate nel database.
 
 ## Contributi
 
@@ -284,3 +213,6 @@ Per contribuire al progetto:
 ## Licenza
 
 Questo progetto è rilasciato sotto licenza MIT.
+```
+
+Questo README aggiornato include una nuova sezione "Ultimi Aggiornamenti" con le modifiche recenti, una sezione "Gestione Errori" che illustra le migliorie apportate e aggiornamenti vari alle altre sezioni per riflettere lo stato attuale del progetto.
