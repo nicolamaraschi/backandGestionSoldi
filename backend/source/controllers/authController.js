@@ -1,6 +1,8 @@
 const User = require('../models/User');
+const Category = require('../models/Category');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const defaultCategories = require('../utils/defaultCategories');
 
 // Registrazione dell'utente
 exports.register = async (req, res) => {
@@ -48,6 +50,14 @@ exports.register = async (req, res) => {
     // Crea nuovo utente
     user = new User({ email, password, name });
     await user.save();
+    
+    // Crea categorie predefinite per il nuovo utente
+    const userCategories = defaultCategories.map(category => ({
+      ...category,
+      userId: user._id
+    }));
+    
+    await Category.insertMany(userCategories);
     
     // Genera token JWT
     const payload = { userId: user._id };

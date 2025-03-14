@@ -24,6 +24,9 @@ const BudgetItem = ({ budget, onEdit, onDelete }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   
+  // Gestisci il caso in cui budget.category è null o non ha la proprietà name
+  const categoryName = budget.category && budget.category.name ? budget.category.name : 'Categoria non disponibile';
+  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -42,7 +45,7 @@ const BudgetItem = ({ budget, onEdit, onDelete }) => {
     onDelete();
   };
 
-  // For demo purposes, calculate a random spent amount
+  // Per demo purposes, calculate a random spent amount
   // In a real app, this would come from the sum of expenses in this category
   const getRandomSpent = () => {
     return Math.random() * budget.amount;
@@ -89,7 +92,7 @@ const BudgetItem = ({ budget, onEdit, onDelete }) => {
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          {budget.category.name}
+          {categoryName}
         </Typography>
         <IconButton
           aria-label="more"

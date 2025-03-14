@@ -1,5 +1,5 @@
-// src/controllers/categoryController.js
 const Category = require('../models/Category');
+const defaultCategories = require('../utils/defaultCategories');
 
 // Ottieni tutte le categorie
 exports.getCategories = async (req, res) => {
@@ -43,6 +43,7 @@ exports.deleteCategory = async (req, res) => {
   }
 };
 
+// Aggiorna una categoria
 exports.updateCategory = async (req, res) => {
   const { name, type } = req.body;
 
@@ -58,5 +59,31 @@ exports.updateCategory = async (req, res) => {
     res.json(updatedCategory);
   } catch (err) {
     res.status(400).json({ message: err.message });
+  }
+};
+
+// Ripristina le categorie predefinite
+exports.resetToDefaultCategories = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    
+    // Elimina tutte le categorie esistenti dell'utente
+    await Category.deleteMany({ userId });
+    
+    // Crea nuove categorie predefinite
+    const userCategories = defaultCategories.map(category => ({
+      ...category,
+      userId
+    }));
+    
+    const categories = await Category.insertMany(userCategories);
+    
+    res.json({ 
+      msg: 'Categorie ripristinate con successo',
+      categories
+    });
+  } catch (err) {
+    console.error('Errore nel ripristino delle categorie:', err);
+    res.status(500).json({ message: err.message });
   }
 };

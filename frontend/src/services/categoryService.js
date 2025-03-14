@@ -19,3 +19,8 @@ export const deleteCategory = async (id) => {
   const response = await api.delete(`/categories/${id}`);
   return response.data;
 };
+
+export const resetToDefaultCategories = async () => {
+  const response = await api.post('/categories/reset-defaults');
+  return response.data;
+};

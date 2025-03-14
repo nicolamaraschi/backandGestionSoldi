@@ -15,4 +15,7 @@ router.delete('/:id', authMiddleware, categoryController.deleteCategory);
 // Aggiorna una categoria
 router.put('/:id', authMiddleware, categoryController.updateCategory);
 
+// Ripristina le categorie predefinite
+router.post('/reset-defaults', authMiddleware, categoryController.resetToDefaultCategories);
+
 module.exports = router;

@@ -1,5 +1,3 @@
-// Modifica completa per src/components/categories/CategoryList.jsx
-
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -10,13 +8,18 @@ import {
   CircularProgress,
   Dialog,
   Tabs,
-  Tab
+  Tab,
+  Tooltip
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { 
+  Add as AddIcon,
+  RestartAlt as RestartAltIcon 
+} from '@mui/icons-material';
 import CategoryItem from './CategoryItem';
 import CategoryForm from './CategoryForm';
 import { getCategories, deleteCategory } from '../../services/categoryService';
 import { useAlert } from '../../contexts/AlertContext';
+import api from '../../services/api';
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -24,43 +27,26 @@ const CategoryList = () => {
   const [openForm, setOpenForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [tabValue, setTabValue] = useState('all');
+  const [resetting, setResetting] = useState(false);
   
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    // Utilizziamo un IIFE come abbiamo fatto per Dashboard per evitare di restituire una Promise
-    (function() {
-      let isMounted = true;
-      setLoading(true);
-      
-      // Funzione asincrona interna
-      async function fetchData() {
-        try {
-          const data = await getCategories();
-          if (isMounted) {
-            setCategories(data);
-          }
-        } catch (error) {
-          if (isMounted) {
-            console.error('Error fetching categories:', error);
-            showAlert('Failed to load categories', 'error');
-          }
-        } finally {
-          if (isMounted) {
-            setLoading(false);
-          }
-        }
-      }
-      
-      fetchData();
-      
-      // Funzione di pulizia corretta
-      return () => {
-        isMounted = false;
-      };
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      showAlert('Impossibile caricare le categorie', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOpenForm = () => {
     setEditingCategory(null);
@@ -81,46 +67,37 @@ const CategoryList = () => {
     try {
       await deleteCategory(id);
       setCategories(categories.filter(category => category._id !== id));
-      showAlert('Category deleted successfully', 'success');
+      showAlert('Categoria eliminata con successo', 'success');
     } catch (error) {
-      showAlert('Failed to delete category', 'error');
+      showAlert('Impossibile eliminare la categoria', 'error');
       console.error('Error deleting category:', error);
     }
   };
 
   const handleFormSubmit = () => {
-    // Qui utilizziamo una funzione IIFE immediatamente eseguita per gestire 
-    // la chiamata asincrona senza ritornare una Promise
-    (function() {
-      let isMounted = true;
-      
-      async function refetchCategories() {
-        try {
-          if (isMounted) {
-            const data = await getCategories();
-            setCategories(data);
-            handleCloseForm();
-            showAlert(editingCategory ? 'Category updated successfully' : 'Category added successfully', 'success');
-          }
-        } catch (error) {
-          if (isMounted) {
-            console.error('Error fetching categories:', error);
-          }
-        }
-      }
-      
-      refetchCategories();
-      
-      // Non è necessario ritornare una funzione di pulizia in questo caso
-      // perché non è un effetto, ma per sicurezza lo facciamo comunque
-      return () => {
-        isMounted = false;
-      };
-    })();
+    fetchCategories();
+    handleCloseForm();
+    showAlert(editingCategory ? 'Categoria aggiornata con successo' : 'Categoria aggiunta con successo', 'success');
   };
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
+  };
+
+  const handleResetCategories = async () => {
+    if (window.confirm('Questa azione sostituirà tutte le tue categorie con quelle predefinite. Continuare?')) {
+      try {
+        setResetting(true);
+        await api.post('/categories/reset-defaults');
+        await fetchCategories();
+        showAlert('Categorie ripristinate con successo', 'success');
+      } catch (error) {
+        showAlert('Impossibile ripristinare le categorie', 'error');
+        console.error('Error resetting categories:', error);
+      } finally {
+        setResetting(false);
+      }
+    }
   };
 
   const filteredCategories = tabValue === 'all'
@@ -131,15 +108,28 @@ const CategoryList = () => {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-          Categories
+          Categorie
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpenForm}
-        >
-          Add Category
-        </Button>
+        <Box>
+          <Tooltip title="Ripristina le categorie predefinite">
+            <Button
+              variant="outlined"
+              startIcon={<RestartAltIcon />}
+              onClick={handleResetCategories}
+              disabled={resetting}
+              sx={{ mr: 2 }}
+            >
+              {resetting ? <CircularProgress size={24} /> : 'Ripristina Predefinite'}
+            </Button>
+          </Tooltip>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpenForm}
+          >
+            Aggiungi Categoria
+          </Button>
+        </Box>
       </Box>
       
       <Paper 
@@ -158,9 +148,9 @@ const CategoryList = () => {
           textColor="primary"
           sx={{ mb: 3 }}
         >
-          <Tab value="all" label="All Categories" />
-          <Tab value="income" label="Income" />
-          <Tab value="expense" label="Expense" />
+          <Tab value="all" label="Tutte le Categorie" />
+          <Tab value="income" label="Entrate" />
+          <Tab value="expense" label="Uscite" />
         </Tabs>
         
         {loading ? (
@@ -170,7 +160,7 @@ const CategoryList = () => {
         ) : filteredCategories.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="body1" color="textSecondary">
-              No categories found
+              Nessuna categoria trovata
             </Typography>
           </Box>
         ) : (
