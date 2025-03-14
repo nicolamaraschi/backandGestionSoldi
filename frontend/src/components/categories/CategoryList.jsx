@@ -1,3 +1,5 @@
+// Modifica completa per src/components/categories/CategoryList.jsx
+
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -26,21 +28,39 @@ const CategoryList = () => {
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
+    // Utilizziamo un IIFE come abbiamo fatto per Dashboard per evitare di restituire una Promise
+    (function() {
+      let isMounted = true;
       setLoading(true);
-      const data = await getCategories();
-      setCategories(data);
-    } catch (error) {
-      showAlert('Failed to load categories', 'error');
-      console.error('Error fetching categories:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      
+      // Funzione asincrona interna
+      async function fetchData() {
+        try {
+          const data = await getCategories();
+          if (isMounted) {
+            setCategories(data);
+          }
+        } catch (error) {
+          if (isMounted) {
+            console.error('Error fetching categories:', error);
+            showAlert('Failed to load categories', 'error');
+          }
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
+        }
+      }
+      
+      fetchData();
+      
+      // Funzione di pulizia corretta
+      return () => {
+        isMounted = false;
+      };
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleOpenForm = () => {
     setEditingCategory(null);
@@ -69,9 +89,34 @@ const CategoryList = () => {
   };
 
   const handleFormSubmit = () => {
-    fetchCategories();
-    handleCloseForm();
-    showAlert(editingCategory ? 'Category updated successfully' : 'Category added successfully', 'success');
+    // Qui utilizziamo una funzione IIFE immediatamente eseguita per gestire 
+    // la chiamata asincrona senza ritornare una Promise
+    (function() {
+      let isMounted = true;
+      
+      async function refetchCategories() {
+        try {
+          if (isMounted) {
+            const data = await getCategories();
+            setCategories(data);
+            handleCloseForm();
+            showAlert(editingCategory ? 'Category updated successfully' : 'Category added successfully', 'success');
+          }
+        } catch (error) {
+          if (isMounted) {
+            console.error('Error fetching categories:', error);
+          }
+        }
+      }
+      
+      refetchCategories();
+      
+      // Non è necessario ritornare una funzione di pulizia in questo caso
+      // perché non è un effetto, ma per sicurezza lo facciamo comunque
+      return () => {
+        isMounted = false;
+      };
+    })();
   };
 
   const handleTabChange = (event, newValue) => {
@@ -149,11 +194,13 @@ const CategoryList = () => {
         fullWidth
         maxWidth="xs"
       >
-        <CategoryForm 
-          onClose={handleCloseForm}
-          onSubmit={handleFormSubmit}
-          category={editingCategory}
-        />
+        {openForm && (
+          <CategoryForm 
+            onClose={handleCloseForm}
+            onSubmit={handleFormSubmit}
+            category={editingCategory}
+          />
+        )}
       </Dialog>
     </Box>
   );

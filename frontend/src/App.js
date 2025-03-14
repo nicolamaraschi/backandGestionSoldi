@@ -1,3 +1,5 @@
+// Aggiornamento di src/App.js con l'aggiunta di ErrorBoundary
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -7,15 +9,16 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from './contexts/AuthContext';
 import { AlertProvider } from './contexts/AlertContext';
 
-// Auth Components
+// Componenti di autenticazione
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import PrivateRoute from './components/auth/PrivateRoute';
 
-// Layout Component
+// Componenti di layout e gestione errori
 import Layout from './components/common/Layout';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
-// Main Components
+// Componenti principali
 import Dashboard from './components/dashboard/Dashboard';
 import MovementList from './components/movements/MovementList';
 import CategoryList from './components/categories/CategoryList';
@@ -88,61 +91,79 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <AlertProvider>
-          <Router>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
-              <Route element={<PrivateRoute />}>
-                <Route path="/" element={
-                  <Layout>
-                    <Dashboard />
-                  </Layout>
-                } />
-                <Route path="/movements" element={
-                  <Layout>
-                    <MovementList />
-                  </Layout>
-                } />
-                <Route path="/categories" element={
-                  <Layout>
-                    <CategoryList />
-                  </Layout>
-                } />
-                <Route path="/budgets" element={
-                  <Layout>
-                    <BudgetList />
-                  </Layout>
-                } />
-                <Route path="/goals" element={
-                  <Layout>
-                    <GoalList />
-                  </Layout>
-                } />
-                <Route path="/analytics" element={
-                  <Layout>
-                    <Analytics />
-                  </Layout>
-                } />
-                <Route path="/notifications" element={
-                  <Layout>
-                    <NotificationList />
-                  </Layout>
-                } />
-                <Route path="/settings" element={
-                  <Layout>
-                    <div>Settings Page (Coming Soon)</div>
-                  </Layout>
-                } />
-              </Route>
-              
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Router>
-        </AlertProvider>
-      </AuthProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <AlertProvider>
+            <Router>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                
+                <Route element={<PrivateRoute />}>
+                  <Route path="/" element={
+                    <Layout>
+                      <ErrorBoundary>
+                        <Dashboard />
+                      </ErrorBoundary>
+                    </Layout>
+                  } />
+                  <Route path="/movements" element={
+                    <Layout>
+                      <ErrorBoundary>
+                        <MovementList />
+                      </ErrorBoundary>
+                    </Layout>
+                  } />
+                  <Route path="/categories" element={
+                    <Layout>
+                      <ErrorBoundary>
+                        <CategoryList />
+                      </ErrorBoundary>
+                    </Layout>
+                  } />
+                  <Route path="/budgets" element={
+                    <Layout>
+                      <ErrorBoundary>
+                        <BudgetList />
+                      </ErrorBoundary>
+                    </Layout>
+                  } />
+                  <Route path="/goals" element={
+                    <Layout>
+                      <ErrorBoundary>
+                        <GoalList />
+                      </ErrorBoundary>
+                    </Layout>
+                  } />
+                  <Route path="/analytics" element={
+                    <Layout>
+                      <ErrorBoundary>
+                        <Analytics />
+                      </ErrorBoundary>
+                    </Layout>
+                  } />
+                  <Route path="/notifications" element={
+                    <Layout>
+                      <ErrorBoundary>
+                        <NotificationList />
+                      </ErrorBoundary>
+                    </Layout>
+                  } />
+                  <Route path="/settings" element={
+                    <Layout>
+                      <ErrorBoundary>
+                        <div>Settings Page (Coming Soon)</div>
+                      </ErrorBoundary>
+                    </Layout>
+                  } />
+                </Route>
+                
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Router>
+          </AlertProvider>
+        </AuthProvider>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }

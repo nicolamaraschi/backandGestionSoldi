@@ -17,9 +17,21 @@ exports.getMovements = async (req, res) => {
 // Statistiche dei movimenti
 exports.getStats = async (req, res) => {
   try {
+    // Ottieni l'ID utente dal token
+    const userId = req.user.userId;
+    
+    // Converti l'ID utente da stringa a oggetto MongoDB ObjectId
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const userObjectId = new ObjectId(userId);
+    
+    console.log('Esecuzione query stats per userId:', userId);
+    
+    // Statistiche con conversione a ObjectId
     const stats = await Movement.aggregate([
       {
-        $match: { userId: req.user.userId }
+        $match: { 
+          userId: userObjectId  // Usa l'ObjectId invece della stringa
+        }
       },
       {
         $group: {
@@ -32,8 +44,12 @@ exports.getStats = async (req, res) => {
         $sort: { _id: 1 }
       }
     ]);
+    
+    console.log('Risultati query stats:', stats);
+    
     res.json(stats);
   } catch (err) {
+    console.error('Errore in dashboard/stats:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -61,9 +77,21 @@ exports.getCategoryStats = async (req, res) => {
 // Saldo del portafoglio
 exports.getBalance = async (req, res) => {
   try {
+    // Ottieni l'ID utente dal token
+    const userId = req.user.userId;
+    
+    // Converti l'ID utente da stringa a oggetto MongoDB ObjectId
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const userObjectId = new ObjectId(userId);
+    
+    console.log('Esecuzione query balance per userId:', userId);
+    
+    // Calcolo del saldo con conversione a ObjectId
     const balance = await Movement.aggregate([
       {
-        $match: { userId: req.user.userId }
+        $match: { 
+          userId: userObjectId  // Usa l'ObjectId invece della stringa
+        }
       },
       {
         $group: {
@@ -72,8 +100,12 @@ exports.getBalance = async (req, res) => {
         }
       }
     ]);
+    
+    console.log('Risultati query balance:', balance);
+    
     res.json(balance.length > 0 ? balance[0] : { balance: 0 });
   } catch (err) {
+    console.error('Errore in dashboard/balance:', err);
     res.status(500).json({ message: err.message });
   }
 };

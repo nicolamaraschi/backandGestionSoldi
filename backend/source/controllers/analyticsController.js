@@ -1,13 +1,23 @@
 const Movement = require('../models/Movement');
 
-// Ottieni una panoramica dell'analisi finanziaria dell'utente
 exports.getOverview = async (req, res) => {
   try {
+    // Ottieni l'ID utente dal token
     const userId = req.user.userId;
     
-    // Panoramica dei guadagni e delle spese totali
+    // Converti l'ID utente da stringa a oggetto MongoDB ObjectId
+    const ObjectId = require('mongoose').Types.ObjectId;
+    const userObjectId = new ObjectId(userId);
+    
+    console.log('Esecuzione query overview per userId:', userId);
+    
+    // Panoramica dei guadagni e delle spese totali con maggiori controlli
     const overview = await Movement.aggregate([
-      { $match: { userId } },
+      { 
+        $match: { 
+          userId: userObjectId  // Usa l'ObjectId invece della stringa
+        } 
+      },
       { 
         $group: {
           _id: null,
@@ -17,8 +27,11 @@ exports.getOverview = async (req, res) => {
       }
     ]);
 
+    console.log('Risultati query overview:', overview);
+    
     res.json(overview.length > 0 ? overview[0] : { totalIncome: 0, totalExpense: 0 });
   } catch (err) {
+    console.error('Errore in analytics/overview:', err);
     res.status(500).json({ message: err.message });
   }
 };

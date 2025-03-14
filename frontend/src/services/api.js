@@ -1,3 +1,6 @@
+// Modifica per src/services/api.js
+// Rimuoviamo la funzione cancelAllRequests che potrebbe causare errori
+
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3000/api';

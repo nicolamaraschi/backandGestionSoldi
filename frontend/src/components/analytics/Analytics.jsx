@@ -1,3 +1,5 @@
+// Modifica completa per src/components/analytics/Analytics.jsx
+
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -24,31 +26,53 @@ const Analytics = () => {
   
   const { showAlert } = useAlert();
 
+  // Usa lo stesso pattern IIFE per evitare problemi con useEffect
   useEffect(() => {
-    fetchAnalyticsData();
-  }, []);
-
-  const fetchAnalyticsData = async () => {
-    try {
+    (function() {
+      let isMounted = true;
       setLoading(true);
-      const [overviewResponse, trendsResponse, categoryStatsResponse] = await Promise.all([
-        api.get('/analytics/overview'),
-        api.get('/analytics/trends'),
-        api.get('/dashboard/category-stats')
-      ]);
+      
+      async function fetchData() {
+        try {
+          console.log('Fetching analytics data...');
+          const [overviewResponse, trendsResponse, categoryStatsResponse] = await Promise.all([
+            api.get('/analytics/overview'),
+            api.get('/analytics/trends'),
+            api.get('/dashboard/category-stats')
+          ]);
 
-      setAnalyticsData({
-        overview: overviewResponse.data,
-        trends: trendsResponse.data,
-        categoryStats: categoryStatsResponse.data
-      });
-    } catch (error) {
-      showAlert('Failed to load analytics data', 'error');
-      console.error('Analytics data fetch error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+          console.log('Overview data:', overviewResponse.data);
+          console.log('Trends data:', trendsResponse.data);
+          console.log('Category stats:', categoryStatsResponse.data);
+
+          if (isMounted) {
+            setAnalyticsData({
+              overview: overviewResponse.data,
+              trends: trendsResponse.data,
+              categoryStats: categoryStatsResponse.data
+            });
+          }
+        } catch (error) {
+          if (isMounted) {
+            console.error('Analytics data fetch error:', error);
+            showAlert('Failed to load analytics data', 'error');
+          }
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
+        }
+      }
+      
+      fetchData();
+      
+      // Funzione di pulizia corretta
+      return () => {
+        isMounted = false;
+      };
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);

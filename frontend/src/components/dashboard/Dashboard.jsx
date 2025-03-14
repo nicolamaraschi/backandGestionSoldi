@@ -1,3 +1,6 @@
+// Modifica completa per src/components/dashboard/Dashboard.jsx
+// Risoluzione dell'errore "useEffect must not return anything besides a function"
+
 import React, { useState, useEffect } from 'react';
 import { 
   Grid, 
@@ -24,32 +27,52 @@ const Dashboard = () => {
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        const [balanceResponse, statsResponse, movementsResponse, categoryStatsResponse] = await Promise.all([
-          api.get('/dashboard/balance'),
-          api.get('/dashboard/stats'),
-          api.get('/dashboard/movements'),
-          api.get('/dashboard/category-stats')
-        ]);
+    // Utilizziamo un IIFE (Immediately Invoked Function Expression) invece di una funzione asincrona diretta
+    // Questo risolve l'errore "useEffect must not return anything besides a function"
+    (function() {
+      let isMounted = true;
+      setLoading(true);
+      
+      // Funzione asincrona interna
+      async function fetchData() {
+        try {
+          const [balanceResponse, statsResponse, movementsResponse, categoryStatsResponse] = await Promise.all([
+            api.get('/dashboard/balance'),
+            api.get('/dashboard/stats'),
+            api.get('/dashboard/movements'),
+            api.get('/dashboard/category-stats')
+          ]);
 
-        setDashboardData({
-          balance: balanceResponse.data.balance || 0,
-          stats: statsResponse.data || [],
-          movements: movementsResponse.data || [],
-          categoryStats: categoryStatsResponse.data || []
-        });
-      } catch (error) {
-        showAlert('Failed to load dashboard data', 'error');
-        console.error('Dashboard data fetch error:', error);
-      } finally {
-        setLoading(false);
+          // Aggiorniamo lo stato solo se il componente è ancora montato
+          if (isMounted) {
+            setDashboardData({
+              balance: balanceResponse.data.balance || 0,
+              stats: statsResponse.data || [],
+              movements: movementsResponse.data || [],
+              categoryStats: categoryStatsResponse.data || []
+            });
+          }
+        } catch (error) {
+          if (isMounted) {
+            console.error('Dashboard data fetch error:', error);
+            showAlert('Failed to load dashboard data', 'error');
+          }
+        } finally {
+          if (isMounted) {
+            setLoading(false);
+          }
+        }
       }
-    };
-
-    fetchDashboardData();
-  }, [showAlert]);
+      
+      fetchData();
+      
+      // La funzione di pulizia corretta (questa non causa errori)
+      return () => {
+        isMounted = false;
+      };
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (

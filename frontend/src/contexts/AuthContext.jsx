@@ -1,5 +1,8 @@
+// Modifica completa per src/contexts/AuthContext.jsx
+// Rimuoviamo la chiamata a api.cancelAllRequests
+
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { login, register, logout, isAuthenticated } from '../services/authService';
+import { login as loginService, register as registerService, logout as logoutService } from '../services/authService';
 
 const AuthContext = createContext();
 
@@ -12,7 +15,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        if (isAuthenticated()) {
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Se c'è un token, consideriamo l'utente autenticato
           setUser({ isAuthenticated: true });
         }
       } catch (error) {
@@ -23,12 +28,17 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
+    
+    // Rimuovi la chiamata a cancelAllRequests nel cleanup
+    return () => {
+      // Nessuna operazione di pulizia necessaria qui
+    };
   }, []);
 
   const loginUser = async (credentials) => {
     setLoading(true);
     try {
-      await login(credentials);
+      await loginService(credentials);
       setUser({ isAuthenticated: true });
       return true;
     } catch (error) {
@@ -42,7 +52,7 @@ export const AuthProvider = ({ children }) => {
   const registerUser = async (userData) => {
     setLoading(true);
     try {
-      await register(userData);
+      await registerService(userData);
       setUser({ isAuthenticated: true });
       return true;
     } catch (error) {
@@ -56,7 +66,7 @@ export const AuthProvider = ({ children }) => {
   const logoutUser = async () => {
     setLoading(true);
     try {
-      await logout();
+      await logoutService();
       setUser(null);
     } catch (error) {
       console.error('Logout failed:', error);

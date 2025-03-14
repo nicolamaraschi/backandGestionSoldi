@@ -1,4 +1,6 @@
-import React from 'react';
+// Modifica per il componente src/components/dashboard/ExpenseChart.jsx
+
+import React, { useRef, useEffect } from 'react';
 import { Box, useTheme } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import {
@@ -26,6 +28,11 @@ ChartJS.register(
 
 const ExpenseChart = ({ stats }) => {
   const theme = useTheme();
+  const chartRef = useRef(null);
+
+  // IMPORTANTE: Rimuoviamo il cleanup che causa l'errore
+  // Non è necessario chiamare destroy() manualmente, 
+  // React-ChartJS-2 gestisce il cleanup automaticamente
 
   // Extract labels (months) and data from stats
   const labels = stats.map(item => item._id);
@@ -61,6 +68,9 @@ const ExpenseChart = ({ stats }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 500, // Reduce animation duration to improve performance
+    },
     plugins: {
       legend: {
         position: 'top',
@@ -121,9 +131,13 @@ const ExpenseChart = ({ stats }) => {
 
   return (
     <Box sx={{ height: 300, mt: 2 }}>
-      <Line data={data} options={options} />
+      <Line 
+        ref={chartRef}
+        data={data} 
+        options={options} 
+      />
     </Box>
   );
 };
 
-export default ExpenseChart;
+export default React.memo(ExpenseChart);
