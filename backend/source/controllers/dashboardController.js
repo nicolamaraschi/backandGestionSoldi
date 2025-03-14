@@ -57,9 +57,13 @@ exports.getStats = async (req, res) => {
 // Statistiche per categoria
 exports.getCategoryStats = async (req, res) => {
   try {
+    const userId = req.user.userId;
+    console.log('Fetching category stats for userId:', userId);
+
+    // Non cercare di convertire automaticamente l'ID in ObjectId
     const stats = await Movement.aggregate([
       {
-        $match: { userId: req.user.userId }
+        $match: { userId } // Lascia che Mongoose gestisca la conversione
       },
       {
         $group: {
@@ -68,8 +72,11 @@ exports.getCategoryStats = async (req, res) => {
         }
       }
     ]);
+    
+    console.log('Category stats results:', stats);
     res.json(stats);
   } catch (err) {
+    console.error('Error in getCategoryStats:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -113,7 +120,8 @@ exports.getBalance = async (req, res) => {
 // Previsioni finanziarie
 exports.getForecast = async (req, res) => {
   try {
-    const movements = await Movement.find({ userId: req.user.userId });
+    const userId = req.user.userId;
+    const movements = await Movement.find({ userId });
     const totalIncome = movements.filter(m => m.type === 'income').reduce((acc, m) => acc + m.amount, 0);
     const totalExpense = movements.filter(m => m.type === 'expense').reduce((acc, m) => acc + m.amount, 0);
     const forecast = {

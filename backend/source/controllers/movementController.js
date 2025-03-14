@@ -1,15 +1,16 @@
 const Movement = require('../models/Movement'); // Importa il modello Movement
 
 exports.getMovements = async (req, res) => {
-    try {
-      console.log('Fetching movements');
-      const movements = await Movement.find();
-      res.json(movements);
-    } catch (err) {
-      console.error('Error fetching movements:', err.message);
-      res.status(500).json({ message: err.message });
-    }
-  };
+  try {
+    console.log('Fetching movements for userId:', req.user.userId);
+    // Modifica qui: aggiungi il filtro per userId
+    const movements = await Movement.find({ userId: req.user.userId }).sort({ date: -1 });
+    res.json(movements);
+  } catch (err) {
+    console.error('Error fetching movements:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
   
   exports.addMovement = async (req, res) => {
     const { description, amount, date, category, type } = req.body;
