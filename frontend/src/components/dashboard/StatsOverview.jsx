@@ -4,7 +4,8 @@ import {
   Paper, 
   Typography,
   Grid,
-  Divider
+  Divider,
+  CircularProgress
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -13,9 +14,9 @@ import {
   Savings as SavingsIcon
 } from '@mui/icons-material';
 
-const StatsOverview = ({ stats }) => {
-  // Calculate current month stats
-  const currentMonth = new Date().toISOString().slice(0, 7); // Format: "YYYY-MM"
+const StatsOverview = ({ stats, loading }) => {
+  // Calcola le statistiche del mese corrente
+  const currentMonth = new Date().toISOString().slice(0, 7); // Formato: "YYYY-MM"
   const currentMonthStats = stats.find(stat => stat._id === currentMonth) || 
     { totalIncome: 0, totalExpense: 0 };
   
@@ -28,8 +29,27 @@ const StatsOverview = ({ stats }) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR'
-    }).format(amount);
+    }).format(amount || 0);
   };
+
+  if (loading) {
+    return (
+      <Paper 
+        elevation={0} 
+        sx={{ 
+          p: 3, 
+          borderRadius: 2,
+          height: '100%',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <CircularProgress />
+      </Paper>
+    );
+  }
 
   return (
     <Paper
@@ -46,7 +66,7 @@ const StatsOverview = ({ stats }) => {
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <CalendarMonthIcon color="primary" sx={{ mr: 1 }} />
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          This Month
+          Questo Mese
         </Typography>
       </Box>
 
@@ -55,7 +75,7 @@ const StatsOverview = ({ stats }) => {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', color: 'success.main' }}>
               <TrendingUpIcon fontSize="small" sx={{ mr: 0.5 }} />
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>Income</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>Entrate</Typography>
             </Box>
             <Typography variant="h6" sx={{ fontWeight: 600, mt: 0.5 }}>
               {formatCurrency(currentMonthStats.totalIncome)}
@@ -67,7 +87,7 @@ const StatsOverview = ({ stats }) => {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', color: 'error.main' }}>
               <TrendingDownIcon fontSize="small" sx={{ mr: 0.5 }} />
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>Expenses</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>Uscite</Typography>
             </Box>
             <Typography variant="h6" sx={{ fontWeight: 600, mt: 0.5 }}>
               {formatCurrency(currentMonthStats.totalExpense)}
@@ -82,7 +102,7 @@ const StatsOverview = ({ stats }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
           <SavingsIcon color="primary" sx={{ mr: 1 }} />
           <Typography variant="body2" sx={{ fontWeight: 500 }}>
-            Monthly Savings
+            Risparmio Mensile
           </Typography>
         </Box>
         
@@ -94,17 +114,19 @@ const StatsOverview = ({ stats }) => {
             {formatCurrency(monthlySavings)}
           </Typography>
           
-          <Box sx={{ 
-            borderRadius: 1,
-            px: 1,
-            py: 0.5,
-            bgcolor: monthlySavings >= 0 ? 'success.light' : 'error.light',
-            color: monthlySavings >= 0 ? 'success.contrastText' : 'error.contrastText'
-          }}>
-            <Typography variant="body2" fontWeight="bold">
-              {savingsRate.toFixed(0)}% of income
-            </Typography>
-          </Box>
+          {currentMonthStats.totalIncome > 0 && (
+            <Box sx={{ 
+              borderRadius: 1,
+              px: 1,
+              py: 0.5,
+              bgcolor: monthlySavings >= 0 ? 'success.light' : 'error.light',
+              color: monthlySavings >= 0 ? 'success.contrastText' : 'error.contrastText'
+            }}>
+              <Typography variant="body2" fontWeight="bold">
+                {savingsRate.toFixed(0)}% delle entrate
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
     </Paper>
